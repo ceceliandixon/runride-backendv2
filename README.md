@@ -1,6 +1,9 @@
 # Run and Ride Web App
 The purpose of Run and Ride is to give users the opportunity to make friends and organize sports outings with those around them. When completed a user will have a newsfeed of friend activities and will be able to make posts encouraging other users to RSVP to their runs/rides. Users will also have the capability to like, comment, make groups, and post their own solo/group rides.
 
+## Iteration 3 - Backend
+For iteration three I added more backend functionality as needed. There is now the ability to patch likes onto activities and patch friends onto users. I also added getting all activities for a user and getting all activities in general. I began the use of Multer to let users upload their own pictures from the frontend but had trouble returning these to the user in a way that actually showed up. Unfortunately I met a huge road block of not being able to properly deploy my backend that took a lot of time this week. I am happy with my progress ultimately and met all requirements for the project. I wish I had a bit more time to finish-- this ends up being a lot of work to do alone.
+
 ## Iteration 2 - Backend
 For iteration two I added more backend functionality and databases. The major addition in this iteration is the creation of a users table. This table takes information from the Google Authentication upon login to populate itself. For now it holds a name, an id (the Google Id), a profile picture, and a friends list which is an array of the ids of a user's friends. This starts as an empty array. User's have corresponding, put, post, and delete methods. We can request a user based on id and request a users list of friends based on id.
 
