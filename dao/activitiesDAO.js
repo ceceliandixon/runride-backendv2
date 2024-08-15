@@ -85,19 +85,18 @@ export default class activitiesDAO {
           return { error: e.message };
         }
       }
-    }
 
-    static async getActivities() {
+      static async getActivities() {
         try {
-            // Fetch all activities from the database
-            const cursor = await activities.find({}).toArray(); // No filters or pagination
-            const totalNumActivities = cursor.length; // Count the number of activities
-            return { activitiesList: cursor, totalNumActivities };
+          // Fetch all activities from the database
+          const cursor = await activities.find({}).toArray(); // No filters or pagination
+          const totalNumActivities = cursor.length; // Count the number of activities
+          return { activitiesList: cursor, totalNumActivities };
         } catch (e) {
-            console.error(`Unable to issue find command, ${e}`);
-            return { activitiesList: [], totalNumActivities: 0 };
+          console.error(`Unable to issue find command, ${e}`);
+          return { activitiesList: [], totalNumActivities: 0 };
         }
-    }
+      }
 
     static async deleteActivity(activityId, userId) {
         console.log(`deleteActivity called with activityId: ${activityId} and userId: ${userId}`); // Log the function call
