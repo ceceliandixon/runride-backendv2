@@ -47,9 +47,13 @@ router
 // Routes for users
 router
   .route('/users')
-  .post(usersController.apiCreateUser)
-  .put(usersController.apiUpdateFriends);
+  .post(usersController.apiCreateUser);
 
 router.route('/users/:userId').get(usersController.apiGetUser);
+
+router.route('/users/:id/friend')
+    .patch(activitiesController.apiAddLike);
+
+
 
 export default router;

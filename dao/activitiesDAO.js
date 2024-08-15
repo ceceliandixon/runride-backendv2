@@ -57,7 +57,6 @@ export default class activitiesDAO {
         }
     }
 
-
     static async addLike(activityId, userId) {
         try {
             const updateResponse = await activities.updateOne(
@@ -76,6 +75,18 @@ export default class activitiesDAO {
         }
     }
 
+    static async getActivitiesByUserId(userId) {
+        try {
+          // Assuming userId is stored as a string
+          const activitiesList = await activities.find({ userId }).toArray();
+          return activitiesList;
+        } catch (e) {
+          console.error(`Unable to get activities by userId: ${e}`);
+          return { error: e.message };
+        }
+      }
+    }
+
     static async getActivities() {
         try {
             // Fetch all activities from the database
@@ -85,6 +96,32 @@ export default class activitiesDAO {
         } catch (e) {
             console.error(`Unable to issue find command, ${e}`);
             return { activitiesList: [], totalNumActivities: 0 };
+        }
+    }
+
+    static async deleteActivity(activityId, userId) {
+        console.log(`deleteActivity called with activityId: ${activityId} and userId: ${userId}`); // Log the function call
+        
+        try {
+            // Fetch the activity to check the stored userId
+            const activity = await activities.findOne({ _id: new ObjectId(activityId) });
+    
+            if (!activity) {
+                console.error(`Activity with ID ${activityId} not found.`);
+                return { error: "Activity not found." };
+            }
+    
+            if (activity.userId !== userId) {
+                console.error(`User ${userId} is not authorized to delete activity ${activityId}.`);
+                return { error: "Unauthorized access." };
+            }
+    
+            // Proceed with deletion if user is authorized
+            const deleteResponse = await activities.deleteOne({ _id: new ObjectId(activityId) });
+            return deleteResponse;
+        } catch (e) {
+            console.error(`Unable to delete activity: ${e}`);
+            return { error: e };
         }
     }
 

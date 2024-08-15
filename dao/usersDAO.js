@@ -1,3 +1,4 @@
+// user.dao.js
 import mongodb from 'mongodb';
 const ObjectId = mongodb.ObjectId;
 
@@ -30,36 +31,42 @@ export default class usersDAO {
     }
   }
 
-  static async updateFriends(userId, friendsList) {
+  static async addFriend(userId, friendId) {
     try {
+      // Update the user's friends list with string IDs
       const updateResponse = await users.updateOne(
-        { userId: userId },
-        { $set: { friendsList: friendsList } },
-        { upsert: true }
+        { userId: userId }, // Find user by userId (string)
+        { $addToSet: { friendsList: friendId } } // Add friendId to friendsList (string)
       );
-      return updateResponse;
+
+      if (updateResponse.matchedCount === 0) {
+        throw new Error('No user found with the provided ID.');
+      }
+
+      return { status: 'success', matchedCount: updateResponse.matchedCount, modifiedCount: updateResponse.modifiedCount };
     } catch (e) {
-      console.error(`Unable to update friends (DAO): ${e}`);
-      return { error: e };
+      console.error(`Unable to add friend: ${e.message}`);
+      return { error: e.message };
     }
   }
 
   static async getUser(id) {
     try {
-        const user = await users.findOne({ userId: id });
-        return user; // return null if user is not found
+      const user = await users.findOne({ userId: id });
+      return user;
     } catch (e) {
-        console.error(`Something went wrong in getUser: ${e}`);
-        throw e; // only throw if there's an actual error with the query
+      console.error(`Something went wrong in getUser: ${e}`);
+      throw e;
     }
-}
+  }
 
   static async getFriends(id) {
-    let cursor;
     try {
-      cursor = await users.find({ userId: id });
-      const friends = await cursor.toArray();
-      return friends[0];
+      const user = await users.findOne({ userId: id });
+      if (!user) {
+        throw new Error('User not found');
+      }
+      return user.friendsList; // Return the friendsList array directly
     } catch (e) {
       console.error(`Something went wrong in getFriends: ${e}`);
       throw e;

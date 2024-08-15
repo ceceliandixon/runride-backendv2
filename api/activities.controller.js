@@ -39,6 +39,31 @@ export default class activitiesController {
         }
     }
 
+    static async apiGetActivitiesByUserId(req, res, next) {
+        try {
+            const userId = req.params.userId; // Extract userId from the request parameters
+            
+            if (!userId) {
+                return res.status(400).json({ error: 'User ID is required' });
+            }
+
+            const activitiesResponse = await activitiesDAO.getActivitiesByUserId(userId); // Fetch activities by user ID
+
+            if (activitiesResponse.error) {
+                return res.status(500).json({ error: activitiesResponse.error });
+            }
+
+            if (activitiesResponse.length === 0) {
+                return res.status(404).json({ error: 'No activities found for this user' });
+            }
+
+            res.json(activitiesResponse);
+        } catch (e) {
+            console.error(`API Error: ${e}`);
+            res.status(500).json({ error: e.message });
+        }
+    }
+    
     static async apiAddLike(req, res, next) {
         try {
             const activityId = req.params.id; // Extract activityId from route parameters
@@ -97,14 +122,17 @@ export default class activitiesController {
         try {
             const activityId = req.body.activity_id;
             const userId = req.body.user_id;
-            const activityResponse = await activitiesDAO.deleteActivity(
-                activityId,
-                userId,
-            );
-
+            const activityResponse = await activitiesDAO.deleteActivity(activityId, userId);
+    
             var { error } = activityResponse;
             if (error) {
-                res.status(500).json({ error });
+                if (error === "Activity not found.") {
+                    res.status(404).json({ error });
+                } else if (error === "Unauthorized access.") {
+                    res.status(403).json({ error });
+                } else {
+                    res.status(500).json({ error });
+                }
             } else {
                 res.json({ status: "success" });
             }
@@ -112,6 +140,7 @@ export default class activitiesController {
             res.status(500).json({ error: e.message });
         }
     }
+    
 
     static async apiGetActivityById(req, res, next) {
         try {
